@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Dao.UserDao">
+	<select id="userLogin" resultType="User">
+		SELECT * FROM smbms_user where userCode=#{userCode} and userPassword=#{userPassword}
+	</select>
+	<select id="findUsers" resultType="User">
+			SELECT u.`id`,u.`userCode`,u.`userName`,u.`userPassword`,u.`gender`,u.`birthday`,TIMESTAMPDIFF(YEAR,u.`birthday`,CURDATE()) AS age,
+			u.`phone`,u.`address`,u.`userRole`,u.`createdBy`,u.`creationDate`,u.`modifyBy`,u.`modifyDate`,
+			r.`roleName` AS userRoleName
+ 			FROM smbms_user u
+ 			INNER JOIN smbms_role r ON r.`id`=u.`userRole`
+ 			WHERE 1=1
+ 			<if test="userName!=null">
+ 				AND u.`userName` LIKE CONCAT('%',#{userName},'%')
+ 			</if>
+ 			<if test="userRole!=0">
+ 				AND u.`userRole`=#{userRole}
+ 			</if>
+ 			LIMIT #{from},#{offset}
+	</select>
+	<select id="findUserCount" resultType="int">
+			SELECT count(1) FROM smbms_user
+ 			<if test="userName!=null">
+ 				AND u.`userName` LIKE CONCAT('%',#{userName},'%')
+ 			</if>
+ 			<if test="userRole!=0">
+ 				AND u.`userRole`=#{userRole}
+ 			</if>
+	</select>
+</mapper>
